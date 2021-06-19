@@ -57,13 +57,27 @@ start_scores, end_scores = model(torch.tensor([input_ids]),  # The tokens repres
 
 
 tokens = tokenizer.convert_ids_to_tokens(input_ids)
+
+
 # Find the tokens with the highest `start` and `end` scores.
 answer_start = torch.argmax(start_scores)
 answer_end = torch.argmax(end_scores)
 
-# Combine the tokens in the answer and print it out.
-answer = ' '.join(tokens[answer_start:answer_end+1])
+# Start with the first token.
+answer = tokens[answer_start]
+
+# Select the remaining answer tokens and join them with whitespace.
+for i in range(answer_start + 1, answer_end + 1):
+
+    # If it's a subword token, then recombine it with the previous token.
+    if tokens[i][0:2] == '##':
+        answer += tokens[i][2:]
+
+    # Otherwise, add a space then the token.
+    else:
+        answer += ' ' + tokens[i]
 
 print('Answer: "' + answer + '"')
+
 
 print("hello world")
