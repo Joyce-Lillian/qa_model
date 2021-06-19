@@ -88,13 +88,11 @@ def answer_question(question, answer_text):
     print('Answer: "' + answer + '"')
 
 
-bert_abstract = "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pretrain deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be finetuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial taskspecific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement)."
+# bert_abstract = "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pretrain deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be finetuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial taskspecific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement)."
 
-question = "What are some example applications of BERT?"
+bert_abstract = "Purchased Content. When you purchase an item of content, your content will be stored in a digital locker and you may view it an unlimited number of times for during your Locker Period. The “Locker Period” will be for at least 5 years from the date of your purchase(subject to the restrictions described in the YouTube Paid Service Terms of Service). Each item of purchased content may have a different Locker Period and you agree to the Locker Period before you order it. Pausing, stopping, or rewinding purchased content will not extend the Locker Period.  As noted in the YouTube Paid Service Terms of Service, if an item of purchased content becomes unavailable during the five year period from the purchase date, you may request a refund."
 
-answer_question(question, bert_abstract)
-
-question = "What does the 'B' in BERT stand for?"
+question = "Can I get a refund??"
 
 answer_question(question, bert_abstract)
 
