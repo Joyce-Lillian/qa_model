@@ -14,13 +14,17 @@
 <body>
   <div class="container">
     <h1>SAVVY SHOPPER!</h1>
-    <div class="search-box">
-      <input type="text" class="search-box-input" placeholder="Enter a URL to find its refund policy">
-      <a href=select><button class="search-box-btn">
+    <form action="{{ url_for('send_URL') }}" method="post">
+      <div class="search-box">
+        <input type="text" name="search_input" class="search-box-input"
+          placeholder="Enter a URL to find its refund policy">
+        <!-- <a href=select> -->
+        <button class="search-box-btn">
           <i class="search-box-icon material-icons">search</i>
-        </button></a>
-
-    </div>
+        </button>
+        <!-- </a> -->
+    </form>
+  </div>
   </div>
 </body>
 

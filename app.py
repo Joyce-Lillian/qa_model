@@ -31,9 +31,13 @@ app.run(debug=True)
 def home_page():
     return render_template('search.html')
 
+
+@app.route('/send_URL', methods=['POST'])
+def send_URL():
+    projectpath = request.form['search_input']
+    return render_template('quote.html')
+
 # Load the home page again
-
-
 # @app.route('/home_2')
 # def home_page2():
 #     alert("inside home2")
