@@ -20,9 +20,33 @@ from bs4 import BeautifulSoup
 from transformers import BertTokenizer
 from transformers import BertForQuestionAnswering
 import torch
-from flask import Flask
+from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 app.run(debug=True)
+
+# Load the home page
+
+
+@app.route('/')
+def home_page():
+    return render_template('search.html')
+
+# Load the home page again
+
+
+# @app.route('/home_2')
+# def home_page2():
+#     alert("inside home2")
+#     return render_template('search.html')
+
+
+# When search clicked, load quote.html
+
+
+@app.route('/select')
+def selector():
+    return render_template('quote.html')
+
 
 # Model
 model = BertForQuestionAnswering.from_pretrained(
@@ -40,7 +64,7 @@ def check_split(input_ids):
     Splits data if there are more than 512 tokens, which is BERT's 
     limit context input
     '''
-    print("length of input_ids: "+str(len(input_ids)))
+    # print("length of input_ids: "+str(len(input_ids)))
     # Keep track of answer splits
     answer_splits = []
     # Total number of splits due to the number of tokens and BERT limit of 512
@@ -55,7 +79,7 @@ def check_split(input_ids):
         else:
             num_of_splits = int(len_input / 512) + 1
 
-    print("number of splits: "+str(num_of_splits))
+    # print("number of splits: "+str(num_of_splits))
 
     temp_ids = input_ids
     # Compute answer for all splits
@@ -63,11 +87,11 @@ def check_split(input_ids):
     for i in range(1):
         ind = (i+1)*512
         text_split_i = temp_ids[:ind]
-        print("ind: "+str(ind))
-        print("Computing answer for split i: " + str(text_split_i))
+        # print("ind: "+str(ind))
+        # print("Computing answer for split i: " + str(text_split_i))
         answer_splits.append(split_answer(text_split_i))
         temp_ids = input_ids[ind:]
-    print("testing to see if rest still works")
+    # print("testing to see if rest still works")
     # print(split_answer(input_ids))
 
     return answer_splits

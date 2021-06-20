@@ -63,3 +63,27 @@ padding: 3rem;
   bottom: 13px;
 }
 
+.myButton {
+  position: absolute;
+  top: 13px;
+  left: 4px;
+	background-color:#ffffff;
+	border:3px solid #000000;
+	display:inline-block;
+	cursor:pointer;
+	color:#000000;
+	font-family:FontAwesome;
+	font-size:17px;
+	padding:13px 25px;
+	text-decoration:none;
+}
+a {
+  text-decoration: none;
+}
+.myButton:hover {
+	background-color:#2f302e;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}

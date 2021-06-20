@@ -6,7 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="search.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/search.css') }}">
+  <!-- <link rel="stylesheet" href="search.css"> -->
   <title>Document</title>
 </head>
 
@@ -15,9 +16,9 @@
     <h1>SAVVY SHOPPER!</h1>
     <div class="search-box">
       <input type="text" class="search-box-input" placeholder="Enter a URL to find its refund policy">
-      <button class="search-box-btn">
-        <i class="search-box-icon material-icons">search</i>
-      </button>
+      <a href=select><button class="search-box-btn">
+          <i class="search-box-icon material-icons">search</i>
+        </button></a>
 
     </div>
   </div>
