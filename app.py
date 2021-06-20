@@ -9,10 +9,14 @@
 # 2. py -m venv env
 # 3. env\Scripts\activate
 # 3. pip install Flask
-# 4. set FLASK_APP=app.py
+# 4. pip install BeautifulSoup4
+# 5. set FLASK_APP=app.py
 
 # 6. pip install transformers[torch] (inside venv)
 # note: to execute venv just type exit or ctrl^d
+import urllib.request
+from bs4.element import Comment
+from bs4 import BeautifulSoup
 from transformers import BertTokenizer
 from transformers import BertForQuestionAnswering
 import torch
@@ -28,17 +32,60 @@ model = BertForQuestionAnswering.from_pretrained(
 tokenizer = BertTokenizer.from_pretrained(
     'bert-large-uncased-whole-word-masking-finetuned-squad')
 
+###########################  QA FUNCTIONS BELOW    ############################
+
+
+def check_split(input_ids):
+    ''' 
+    Splits data if there are more than 512 tokens, which is BERT's 
+    limit context input
+    '''
+    print("length of input_ids: "+str(len(input_ids)))
+    # Keep track of answer splits
+    answer_splits = []
+    # Total number of splits due to the number of tokens and BERT limit of 512
+    num_of_splits = 0
+    # Number of tokens
+    len_input = len(input_ids)
+
+    # Determine number of splits required
+    if (len_input > 512):
+        if len_input % 512 == 0:
+            num_of_splits = len_input / 512
+        else:
+            num_of_splits = int(len_input / 512) + 1
+
+    print("number of splits: "+str(num_of_splits))
+
+    temp_ids = input_ids
+    # Compute answer for all splits
+    # for i in range(0, num_of_splits+1):
+    for i in range(1):
+        ind = (i+1)*512
+        text_split_i = temp_ids[:ind]
+        print("ind: "+str(ind))
+        print("Computing answer for split i: " + str(text_split_i))
+        answer_splits.append(split_answer(text_split_i))
+        temp_ids = input_ids[ind:]
+    print("testing to see if rest still works")
+    # print(split_answer(input_ids))
+
+    return answer_splits
+
 
 def answer_question(question, answer_text):
     '''
-    Takes a `question` string and an `answer_text` string (which contains the
-    answer), and identifies the words within the `answer_text` that are the
-    answer. Prints them out.
+    Tokenizes the question and answer text
     '''
-    # ======== Tokenize ========
-    # Apply the tokenizer to the input text, treating them as a text-pair.
-    input_ids = tokenizer.encode(question, answer_text)
 
+    input_ids = tokenizer.encode(question, answer_text)
+    check_split(input_ids)
+
+
+def split_answer(input_ids):
+    '''
+    Determines answer start and ending indexes for split_input
+    '''
     # Report how long the input sequence is.
     print('Query has {:,} tokens.\n'.format(len(input_ids)))
 
@@ -75,6 +122,8 @@ def answer_question(question, answer_text):
 
     print('Answer: "' + answer + '"')
 
+#####
+
 
 def start_of_sentence(tokens, answer_start, answer_end):
 
@@ -84,12 +133,15 @@ def start_of_sentence(tokens, answer_start, answer_end):
 
     # Otherwise keep searching for the beginning of the sentence
     else:
-        while tokens[answer_start] != '.':
+        # ADD OR StATEMENT TOO??
+        while tokens[answer_start].isalnum() == False:
+            print(tokens[answer_start])
             answer_start -= 1
 
     # Find the last letter in the sentence
-    if tokens[answer_end] != '.' or tokens[answer_end] != None:
-        while tokens[answer_end] != '.' or answer_end+1 >= len(tokens):
+    # ADD OR StATEMENT TOO??
+    if tokens[answer_end].isalnum() == False:
+        while (tokens[answer_end] != '.' or answer_end+1 >= len(tokens)) and (len(tokens) > answer_end+1):
             answer_end += 1
 
     return tokens[answer_start], answer_start, answer_end
@@ -147,12 +199,43 @@ def full_sentence(tokens, answer_start, answer_end):
     # Capitalize the first letter and add period punctuation to end
     return answer[0].upper()+answer[1:]+'.'
 
+######################   TESTING     ###########################################
 
-bert_abstract = "Purchased Content. When you purchase an item of content, your content will be stored in a digital locker and you may view it an unlimited number of times for during your Locker Period. The “Locker Period” will be for at least 5 years from the date of your purchase (subject to the restrictions described in the YouTube Paid Service Terms of Service). Each item of purchased content may have a different Locker Period and you agree to the Locker Period before you order it. Pausing, stopping, or rewinding purchased content will not extend the Locker Period.  As noted in the YouTube Paid Service Terms of Service, if an item of purchased content becomes unavailable during the five year period from the purchase date, you may request a refund."
 
+bert_abstract = "Purchased Content. When you purchase an item of content, your content will be stored in a digital locker and you may view it an unlimited number of times for during your Locker Period. The “Locker Period” will be for at least 5 years from the date of your purchase (subject to the restrictions described in the YouTube Paid Service Terms of Service). Each item of purchased content may have a different Locker Period and you agree to the Locker Period before you order it. Pausing, stopping, or rewinding purchased content will not extend the Locker Period.  As noted in the YouTube Paid Service Terms of Service, if an item of purchased content becomes unavailable during the five year period from the purchase date, you may request a refund. For purchased content: you may view one stream of each item at a time, you may view up to 3 streams of different items at a time, you may authorize up to 5 devices for offline playback of Locker Video Content at a time and to authorize additional devices, you must deauthorize one of those 5 devices, you may only authorize the same device three times in any 12 month period and de-authorize the same device twice in any 12 month period, you may only deauthorize a total of 2 devices for offline playback every 90 days, and you may only authorize 3 Google accounts on the same device. Stream and offline playback limitations for purchased content apply regardless of which Google product (e.g., Google Play Movies & TV or YouTube) you access the content from."
 question = "Can I get a refund?"
 
 answer_question(question, bert_abstract)
 
+################################################################################
+
+#########  SCRAPING  ###########################################################
+
+
+# def tag_visible(element):
+#     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+#         return False
+#     if isinstance(element, Comment):
+#         return False
+#     return True
+
+
+# def text_from_html(body):
+#     soup = BeautifulSoup(body, 'html.parser')
+#     texts = soup.findAll(text=True)
+#     visible_texts = filter(tag_visible, texts)
+#     return u" ".join(t.strip() for t in visible_texts)
+
+
+# bert_abstract = urllib.request.urlopen(
+#     'https://www.youtube.com/t/usage_paycontent').read()
+# # print(text_from_html(html))
+
+
+# question = "Can I get a refund?"
+
+# answer_question(question, bert_abstract)
+
+################################################################################
 
 print("hello world")
