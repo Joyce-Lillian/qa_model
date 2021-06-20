@@ -227,11 +227,14 @@ answer_question(question, bert_abstract)
 #     return u" ".join(t.strip() for t in visible_texts)
 
 
-# bert_abstract = urllib.request.urlopen(
-#     'https://www.youtube.com/t/usage_paycontent').read()
-# # print(text_from_html(html))
+# # youtube: https://www.youtube.com/t/usage_paycontent
+# # tinder: https://policies.tinder.com/terms/us/en
+# html = urllib.request.urlopen('https://policies.tinder.com/terms/us/en').read()
+# print(text_from_html(html))
 
+################################################################################
 
+# bert_abstract = text_from_html(html)
 # question = "Can I get a refund?"
 
 # answer_question(question, bert_abstract)
