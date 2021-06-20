@@ -35,7 +35,12 @@ def home_page():
 @app.route('/send_URL', methods=['POST'])
 def send_URL():
     projectpath = request.form['search_input']
-    return render_template('quote.html')
+    print("before calling")
+    bert_abstract = scrape(projectpath)
+    question = "Can I get a refund?"
+    output = answer_question(question, bert_abstract)
+    print("output: "+str(output))
+    return render_template('quote.html', output=output)
 
 # Load the home page again
 # @app.route('/home_2')
@@ -95,10 +100,10 @@ def check_split(input_ids):
         # print("Computing answer for split i: " + str(text_split_i))
         answer_splits.append(split_answer(text_split_i))
         temp_ids = input_ids[ind:]
-    # print("testing to see if rest still works")
+    print("testing to see if rest still works")
     # print(split_answer(input_ids))
-
-    return answer_splits
+    print("answer splits: "+str(answer_splits[0]))
+    return answer_splits[0]
 
 
 def answer_question(question, answer_text):
@@ -107,7 +112,7 @@ def answer_question(question, answer_text):
     '''
 
     input_ids = tokenizer.encode(question, answer_text)
-    check_split(input_ids)
+    return check_split(input_ids)
 
 
 def split_answer(input_ids):
@@ -149,6 +154,7 @@ def split_answer(input_ids):
     answer = full_sentence(tokens, answer_start, answer_end)
 
     print('Answer: "' + answer + '"')
+    return ('"' + answer + '"')
 
 #####
 
@@ -230,43 +236,47 @@ def full_sentence(tokens, answer_start, answer_end):
 ######################   TESTING     ###########################################
 
 
-bert_abstract = "Purchased Content. When you purchase an item of content, your content will be stored in a digital locker and you may view it an unlimited number of times for during your Locker Period. The “Locker Period” will be for at least 5 years from the date of your purchase (subject to the restrictions described in the YouTube Paid Service Terms of Service). Each item of purchased content may have a different Locker Period and you agree to the Locker Period before you order it. Pausing, stopping, or rewinding purchased content will not extend the Locker Period.  As noted in the YouTube Paid Service Terms of Service, if an item of purchased content becomes unavailable during the five year period from the purchase date, you may request a refund. For purchased content: you may view one stream of each item at a time, you may view up to 3 streams of different items at a time, you may authorize up to 5 devices for offline playback of Locker Video Content at a time and to authorize additional devices, you must deauthorize one of those 5 devices, you may only authorize the same device three times in any 12 month period and de-authorize the same device twice in any 12 month period, you may only deauthorize a total of 2 devices for offline playback every 90 days, and you may only authorize 3 Google accounts on the same device. Stream and offline playback limitations for purchased content apply regardless of which Google product (e.g., Google Play Movies & TV or YouTube) you access the content from."
-question = "Can I get a refund?"
-
-answer_question(question, bert_abstract)
-
-################################################################################
-
-#########  SCRAPING  ###########################################################
-
-
-# def tag_visible(element):
-#     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
-#         return False
-#     if isinstance(element, Comment):
-#         return False
-#     return True
-
-
-# def text_from_html(body):
-#     soup = BeautifulSoup(body, 'html.parser')
-#     texts = soup.findAll(text=True)
-#     visible_texts = filter(tag_visible, texts)
-#     return u" ".join(t.strip() for t in visible_texts)
-
-
-# # youtube: https://www.youtube.com/t/usage_paycontent
-# # tinder: https://policies.tinder.com/terms/us/en
-# html = urllib.request.urlopen('https://policies.tinder.com/terms/us/en').read()
-# print(text_from_html(html))
-
-################################################################################
-
-# bert_abstract = text_from_html(html)
+# bert_abstract = "Purchased Content. When you purchase an item of content, your content will be stored in a digital locker and you may view it an unlimited number of times for during your Locker Period. The “Locker Period” will be for at least 5 years from the date of your purchase (subject to the restrictions described in the YouTube Paid Service Terms of Service). Each item of purchased content may have a different Locker Period and you agree to the Locker Period before you order it. Pausing, stopping, or rewinding purchased content will not extend the Locker Period.  As noted in the YouTube Paid Service Terms of Service, if an item of purchased content becomes unavailable during the five year period from the purchase date, you may request a refund. For purchased content: you may view one stream of each item at a time, you may view up to 3 streams of different items at a time, you may authorize up to 5 devices for offline playback of Locker Video Content at a time and to authorize additional devices, you must deauthorize one of those 5 devices, you may only authorize the same device three times in any 12 month period and de-authorize the same device twice in any 12 month period, you may only deauthorize a total of 2 devices for offline playback every 90 days, and you may only authorize 3 Google accounts on the same device. Stream and offline playback limitations for purchased content apply regardless of which Google product (e.g., Google Play Movies & TV or YouTube) you access the content from."
 # question = "Can I get a refund?"
 
 # answer_question(question, bert_abstract)
 
 ################################################################################
 
+#########  SCRAPING  ###########################################################
+
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)
+    return u" ".join(t.strip() for t in visible_texts)
+
+
+def scrape(url):
+    html = urllib.request.urlopen(
+        str(url)).read()
+    return text_from_html(html)
+
+
+# youtube: https://www.youtube.com/t/usage_paycontent
+# tinder: https://policies.tinder.com/terms/us/en
+
+# print(text_from_html(html))
+
+################################################################################
+
+# bert_abstract = scrape(url)
+# question = "Can I get a refund?"
+# answer_question(question, bert_abstract)
+
+################################################################################
 print("hello world")
